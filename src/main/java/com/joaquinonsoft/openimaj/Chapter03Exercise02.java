@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.pixel.ConnectedComponent;
-import org.openimaj.image.pixel.PixelSet;
 import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
 import org.openimaj.image.segmentation.SegmentationUtilities;
-import org.openimaj.image.typography.hershey.HersheyFont;
 
 /**
  * 3.1.2. Exercise 2: A real segmentation algorithm
@@ -36,20 +34,19 @@ public class Chapter03Exercise02 {
 		}
 
 		if(input != null) {    
-			input = ColourSpace.convert(input, ColourSpace.CIE_Lab);
+			//input = ColourSpace.convert(input, ColourSpace.CIE_Lab);
 
 			FelzenszwalbHuttenlocherSegmenter<MBFImage> segmenter = new FelzenszwalbHuttenlocherSegmenter<MBFImage>();
 			List<ConnectedComponent> components = segmenter.segment(input);
 			
-			int i = 0;
-			for (final PixelSet comp : components) {
-				if (comp.calculateArea() < 50)
-					continue;
-				input.drawText("Point:" + (i++), comp.calculateCentroidPixel(), HersheyFont.TIMES_MEDIUM, 20);
-			}
+						
+			MBFImage segImage = SegmentationUtilities.renderSegments(input, components);
 			
-			input = ColourSpace.convert(input, ColourSpace.RGB);			
-			SegmentationUtilities.renderSegments(input.getWidth(), input.getHeight(), components);
+			System.out.println(segImage.getColourSpace());
+			//DisplayUtilities.display(segImage, "Chapter 03 - Exercise 02");
 		}
+		
+		System.out.println("Done");
+
 	}
 }
