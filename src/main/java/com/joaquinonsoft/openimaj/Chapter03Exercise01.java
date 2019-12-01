@@ -11,17 +11,31 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.connectedcomponent.GreyscaleConnectedComponentLabeler;
 import org.openimaj.image.pixel.ConnectedComponent;
-import org.openimaj.image.pixel.PixelSet;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.ml.clustering.FloatCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.kmeans.FloatKMeans;
 
-
 /**
- * Chapter 3. Introduction to clustering, segmentation and connected components
+ * 3.1.1. Exercise 1: The PixelProcessor
+ * 
+ * Rather than looping over the image pixels using two for loops, it is possible to use a 
+ * PixelProcessor to accomplish the same task:
+ * 
+ * <pre>
+ * image.processInplace(new PixelProcessor<Float[]>() {
+ * 		Float[] processPixel(Float[] pixel) {
+ * 			...
+ * 		}
+ * });
+ * </pre>
+ * 
+ * Can you re-implement the loop that replaces each pixel with its class 
+ * centroid using a PixelProcessor?
+ * 
+ * What are the advantages and disadvantages of using a PixelProcessor?
  */
-public class App {
+public class Chapter03Exercise01 {
 	public static void main( String[] args ) {
 		//Create an image
 		MBFImage input = null;
@@ -32,43 +46,46 @@ public class App {
 		}
 
 		if(input != null) {    
+			System.out.println(input.colourSpace);
+
 			input = ColourSpace.convert(input, ColourSpace.CIE_Lab);
 
-			final FloatKMeans cluster = FloatKMeans.createExact(3, 2);
+			System.out.println(input.colourSpace);
 
-			final float[][] imageData = input.getPixelVectorNative(new float[input.getWidth() * input.getHeight()][3]);
+			FloatKMeans cluster = FloatKMeans.createExact(4);
 
-			final FloatCentroidsResult result = cluster.cluster(imageData);
+			float[][] imageData = input.getPixelVectorNative(new float[input.getWidth() * input.getHeight()][3]);
 
-			final float[][] centroids = result.centroids;
-			for (final float[] fs : centroids) {
+			FloatCentroidsResult result = cluster.cluster(imageData);
+
+			float[][] centroids = result.centroids;
+			for (float[] fs : centroids) {
 				System.out.println(Arrays.toString(fs));
 			}
 
-			final HardAssigner<float[], ?, ?> assigner = result.defaultHardAssigner();
-			for (int y = 0; y < input.getHeight(); y++) {
-				for (int x = 0; x < input.getWidth(); x++) {
-					final float[] pixel = input.getPixelNative(x, y);
-					final int centroid = assigner.assign(pixel);
+			HardAssigner<float[],?,?> assigner = result.defaultHardAssigner();
+			for (int y=0; y<input.getHeight(); y++) {
+				for (int x=0; x<input.getWidth(); x++) {
+					float[] pixel = input.getPixelNative(x, y);
+					int centroid = assigner.assign(pixel);
 					input.setPixelNative(x, y, centroids[centroid]);
 				}
-			}
+			}	
 
 			input = ColourSpace.convert(input, ColourSpace.RGB);
 			DisplayUtilities.display(input);
 
-			final GreyscaleConnectedComponentLabeler labeler = new GreyscaleConnectedComponentLabeler();
-			final List<ConnectedComponent> components = labeler.findComponents(input.flatten());
+			GreyscaleConnectedComponentLabeler labeler = new GreyscaleConnectedComponentLabeler();
+			List<ConnectedComponent> components = labeler.findComponents(input.flatten());
 
 			int i = 0;
-			for (final PixelSet comp : components) {
+			for (ConnectedComponent comp : components) {
 				if (comp.calculateArea() < 50)
 					continue;
 				input.drawText("Point:" + (i++), comp.calculateCentroidPixel(), HersheyFont.TIMES_MEDIUM, 20);
 			}
 
 			DisplayUtilities.display(input);
-			
 		}
 	}
 }
