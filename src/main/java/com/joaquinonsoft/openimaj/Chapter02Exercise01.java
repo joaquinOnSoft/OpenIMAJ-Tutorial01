@@ -15,8 +15,14 @@ import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.math.geometry.shape.Ellipse;
 
 /**
- * OpenIMAJ Hello world!
- *
+ * 2.1.1. Exercise 1: DisplayUtilities
+ * 
+ * Opening lots of windows can waste time and space 
+ * (for example if you wanted to view images on every iteration of a process
+ * within a loop). In OpenIMAJ we provide a facility to open a named display so 
+ * that was can reuse the display referring to it by name. Try to do this with 
+ * all the images we display in this tutorial. Only 1 window should open for 
+ * the whole tutorial.
  */
 public class Chapter02Exercise01 {
     public static void main( String[] args ) {
