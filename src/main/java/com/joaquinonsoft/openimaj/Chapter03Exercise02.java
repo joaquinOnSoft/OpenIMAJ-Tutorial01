@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
@@ -42,7 +43,7 @@ public class Chapter03Exercise02 {
 			MBFImage segImage = SegmentationUtilities.renderSegments(input, components);
 			
 			System.out.println(segImage.getColourSpace());
-			//DisplayUtilities.display(segImage, "Chapter 03 - Exercise 02");
+			DisplayUtilities.display(segImage, "Chapter 03 - Exercise 02");
 		}
 		
 		System.out.println("Done");
